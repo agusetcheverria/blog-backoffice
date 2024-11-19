@@ -1,13 +1,14 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 
-Route::prefix('backoffice/posts')->group(function () {
-    Route::get('/', [PostController::class, 'index'])->name('backoffice.posts.index');
-    Route::get('/crear', [PostController::class, 'create'])->name('backoffice.posts.create');
-    Route::post('/guardar', [PostController::class, 'store'])->name('backoffice.posts.store');
-    Route::get('/editar/{id}', [PostController::class, 'edit'])->name('backoffice.posts.edit');
-    Route::put('/actualizar/{id}', [PostController::class, 'update'])->name('backoffice.posts.update');
-    Route::delete('/eliminar/{id}', [PostController::class, 'destroy'])->name('backoffice.posts.destroy');
-});
+Route::get('/', function () {
+    return view('index'); 
+})->name('index');
+
+Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+Route::get('/posts/crear', [PostController::class, 'create'])->name('posts.create');
+Route::post('/posts/guardar', [PostController::class, 'store'])->name('posts.store');
+Route::get('/posts/editar/{id}', [PostController::class, 'edit'])->name('posts.edit');
+Route::put('/posts/actualizar/{id}', [PostController::class, 'update'])->name('posts.update');
+Route::delete('/posts/eliminar/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
