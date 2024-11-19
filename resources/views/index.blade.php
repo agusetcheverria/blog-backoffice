@@ -13,6 +13,7 @@
     <nav>
         <ul>
             <li><a href="{{ route('posts.index') }}">Gestión de Posts</a></li>
+            <li><a href="{{ route('users.index') }}">Gestión de Usuarios</a></li>
         </ul>
     </nav>
 </body>

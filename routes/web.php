@@ -14,6 +14,7 @@ Route::get('/posts/editar/{id}', [PostController::class, 'edit'])->name('posts.e
 Route::put('/posts/actualizar/{id}', [PostController::class, 'update'])->name('posts.update');
 Route::delete('/posts/eliminar/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
 
+Route::get('/usuarios', [AuthController::class, 'index'])->name('users.index');
 Route::get('/registro', [AuthController::class, 'register'])->name('users.create');
 Route::post('/registro', [AuthController::class, 'store'])->name('users.store');
 Route::get('/usuarios/editar/{id}', [AuthController::class, 'edit'])->name('users.edit');

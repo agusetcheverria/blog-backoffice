@@ -11,10 +11,15 @@ class AuthController extends Controller
     public function index()
     {
         $users = User::latest()->paginate(10);
-        return view('backoffice.users.index', ['users' => $users]);
+        return view('indexUsers', ['users' => $users]);
     }
 
-    public function register(Request $request)
+    public function register()
+    {
+        return view('createUsers');
+    }
+
+    public function store(Request $request)
     {
         try {
             $validated = $request->validate([
@@ -29,7 +34,7 @@ class AuthController extends Controller
                 'password' => Hash::make($validated['password']),
             ]);
 
-            return redirect()->route('backoffice.users.index')->with('success', 'Usuario registrado exitosamente.');
+            return redirect()->route('users.index')->with('success', 'Usuario registrado exitosamente.');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -38,7 +43,7 @@ class AuthController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('backoffice.users.edit', ['user' => $user]);
+        return view('editUsers', ['user' => $user]);
     }
 
     public function update(Request $request, $id)
@@ -58,7 +63,7 @@ class AuthController extends Controller
             }
             $user->save();
 
-            return redirect()->route('backoffice.users.index')->with('success', 'Usuario actualizado exitosamente.');
+            return redirect()->route('users.index')->with('success', 'Usuario actualizado exitosamente.');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -69,7 +74,7 @@ class AuthController extends Controller
         try {
             $user = User::findOrFail($id);
             $user->delete();
-            return redirect()->route('backoffice.users.index')->with('success', 'Usuario eliminado exitosamente.');
+            return redirect()->route('users.index')->with('success', 'Usuario eliminado exitosamente.');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
