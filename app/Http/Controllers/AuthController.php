@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\User; 
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth; 
-
 
 class AuthController extends Controller
 {
+    public function index()
+    {
+        $users = User::latest()->paginate(10);
+        return view('backoffice.users.index', ['users' => $users]);
+    }
+
     public function register(Request $request)
     {
         try {
@@ -25,41 +29,49 @@ class AuthController extends Controller
                 'password' => Hash::make($validated['password']),
             ]);
 
-            $token = $user->createToken('auth_token')->accessToken;
-
-            return response()->json([
-                'user' => $user,
-                'access_token' => $token
-            ], 201);
+            return redirect()->route('backoffice.users.index')->with('success', 'Usuario registrado exitosamente.');
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return back()->with('error', $e->getMessage());
         }
     }
 
-    public function login(Request $request)
+    public function edit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('backoffice.users.edit', ['user' => $user]);
+    }
+
+    public function update(Request $request, $id)
     {
         try {
             $validated = $request->validate([
-                'email' => 'required|string|email',
-                'password' => 'required|string',
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+                'password' => 'nullable|string|min:8',
             ]);
 
-            if (!Auth::attempt($validated)) {
-                return response()->json(['message' => 'Invalid credentials'], 401);
+            $user = User::findOrFail($id);
+            $user->name = $validated['name'];
+            $user->email = $validated['email'];
+            if ($request->filled('password')) {
+                $user->password = Hash::make($validated['password']);
             }
+            $user->save();
 
-            $user = Auth::user();
-
-            dd($user);
-            // $user = User::find(1);
-            $token = $user->createToken('auth_token')->accessToken;
-
-            return response()->json([
-                'user' => $user,
-                'access_token' => $token
-            ]);
+            return redirect()->route('backoffice.users.index')->with('success', 'Usuario actualizado exitosamente.');
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+            return redirect()->route('backoffice.users.index')->with('success', 'Usuario eliminado exitosamente.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
     }
 }
